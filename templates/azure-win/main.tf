@@ -1,6 +1,6 @@
 #################################################################
 # Terraform template that will deploy:
-#    * Ubuntu VM on Microsoft Azure
+#    * Windows Server VM on Microsoft Azure
 #
 # Version: 2.4
 #
@@ -179,19 +179,31 @@ resource "azurerm_virtual_machine" "vm" {
   resource_group_name   = azurerm_resource_group.default.name
   network_interface_ids = [azurerm_network_interface.vm.id]
   vm_size               = "Standard_F2"
-  admin_username      = "${var.admin_user}"
-  admin_password      = "${var.admin_user_password}"
+  //admin_username      = "${var.admin_user}"
+  //admin_password      = "${var.admin_user_password}"
 
-  source_image_reference {
+  storage_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
     sku       = "2016-Datacenter"
     version   = "latest"
   }
+ 
+  os_profile {
+      admin_username = "${var.admin_user}"
+      admin_password = "${var.admin_user_password}"
+      computer_name  = "MyComputer-vm"
+  }
 
-  os_disk {
+  os_profile_windows_config {
+      provision_vm_agent = true
+  }
+
+  storage_os_disk {
+    name          = "${var.name_prefix}-vm-os-disk1"
     caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
+    //storage_account_type = "Standard_LRS"
+    create_option = "FromImage"
   }
 
 
